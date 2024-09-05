@@ -1,6 +1,7 @@
-# Example file showing a circle moving on screen
+# Module Importing
 import pygame
 from math import radians, sin, cos, sqrt
+from random import randint
 
 # pygame setup
 pygame.init()
@@ -10,26 +11,32 @@ running = True
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-rect_pos = pygame.Vector2(1280 * 3 / 4, 720 / 2)
+rects = []
 lines = []
 line_len = 75
 line_spd = 10
 time = 0
 
-def itc(h, k, x1, y1, x2, y2, r):
-    m = (y2 - y1) / (x2 - x1)
-    c = y1 - m * x1
+def itlc(x0, y0, r, x1, y1, x2, y2):
+    dx = x2 - x1
+    dy = y2 - y1
 
-    a = 1 + m**2
-    b = 2*m*(c - k) - 2*h
-    c = h**2 + (c - k)**2 - r**2
+    a = dx**2 + dy**2
+    b = 2 * (dx * (x1 - x0) + dy * (y1 - y0))
+    c = (x1 - x0)**2 + (y1 - y0)**2 - r**2
 
-    discriminant = b**2 - 4*a*c
+    D = b**2 - 4 * a * c
 
-    if discriminant < 0:
-        return False  # No intersection
-    else:
-        return True  # Intersection
+    if D < 0:
+        return False  
+    
+    sqrtD = sqrt(D)
+    t1 = (-b - sqrtD) / (2 * a)
+    t2 = (-b + sqrtD) / (2 * a)
+
+    if (0 <= t1 <= 1) or (0 <= t2 <= 1):
+        return True 
+    return False  
 
 while running:
 
@@ -53,11 +60,16 @@ while running:
         player_pos.x += 300 * dt
 
     # enemy properties
-    pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+    while len(rects) < 3:
+        rects.append(pygame.Vector2(randint(0, 1280), randint(0, 720)))
+
+    for rect_pos in rects:
+        pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
     
-    if time >= 100 and time % 50 == 0:
-        for deg in range(0, 360, 45):
-            lines.append([rect_pos.x, rect_pos.y, deg])
+    if time >= 80 and time % 40 == 0:
+        for rect_pos in rects:
+            for deg in range(0, 360, 45):
+                lines.append([rect_pos.x, rect_pos.y, deg])
 
     nxt_lines = []
     for line in lines:
@@ -65,20 +77,25 @@ while running:
         end_pos = pygame.Vector2(line_pos.x + line_len * cos(radians(line_bearing)), line_pos.y - line_len * sin(radians(line_bearing)))
         pygame.draw.line(screen, "white", line_pos, end_pos, 5)
 
-        line_eq = [line_pos.y - end_pos.y, line_pos.x - end_pos.x, end_pos.x * line_pos.y - line_pos.x * end_pos.y]
-        player_cur_pos = pygame.Vector2(player_pos.x, player_pos.y)
-        dist_with_player = abs(player_cur_pos.x * line_eq[0] + player_cur_pos.y * line_eq[1] + line_eq[2]) / sqrt(line_eq[0] * line_eq[0] + line_eq[1] * line_eq[1])
-        if dist_with_player < 20:
-            print(dist_with_player, line_bearing)
+        if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
             running = False
 
         line_pos.x += line_spd * cos(radians(line_bearing))
         line_pos.y -= line_spd * sin(radians(line_bearing))
 
-        if line_pos.x >= 0 and line_pos.x <= 1280 and line_pos.y >= 0 and line_pos.y <= 720:
+        if 0 <= line_pos.x <= 1280 and 0 <= line_pos.y <= 720:
             nxt_lines.append([line_pos.x, line_pos.y, line_bearing])
-
+    
     lines = nxt_lines
+
+    for rect_pos in rects:
+        rect_dx = randint(-3, 3) * 7
+        rect_dy = randint(-3, 3) * 7
+
+        if 0 <= rect_pos.x + rect_dx <= 1280:
+            rect_pos.x += rect_dx
+        if 0 <= rect_pos.y + rect_dy <= 720:
+            rect_pos.y += rect_dy
 
     # flip() the display to put your work on screen
     pygame.display.flip()
