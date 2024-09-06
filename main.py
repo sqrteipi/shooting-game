@@ -4,8 +4,10 @@ from math import radians, sin, cos, sqrt
 from random import randint
 
 # pygame setup
+screen_width = 1280 # (maybe later need change screen size so i do this sin)
+screen_height = 720
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -51,24 +53,28 @@ while running:
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
+        if player_pos.y > 300 * dt + 30:
+            player_pos.y -= 300 * dt
     if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
+        if player_pos.y < screen_height - 300 * dt - 30:
+            player_pos.y += 300 * dt
     if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
+        if player_pos.x > 300 * dt + 30:
+            player_pos.x -= 300 * dt
     if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+        if player_pos.x < screen_width - 300 * dt - 30:
+            player_pos.x += 300 * dt
 
     # enemy properties
     while len(rects) < 3:
-        rects.append(pygame.Vector2(randint(0, 1280), randint(0, 720)))
+        rects.append(pygame.Vector2(randint(0, screen_width), randint(0, screen_height)))
 
     for rect_pos in rects:
         pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
     
     if time >= 80 and time % 40 == 0:
         for rect_pos in rects:
-            for deg in range(0, 360, 45):
+            for deg in range(0, 360, 15):
                 lines.append([rect_pos.x, rect_pos.y, deg])
 
     nxt_lines = []
@@ -83,7 +89,7 @@ while running:
         line_pos.x += line_spd * cos(radians(line_bearing))
         line_pos.y -= line_spd * sin(radians(line_bearing))
 
-        if 0 <= line_pos.x <= 1280 and 0 <= line_pos.y <= 720:
+        if 0 <= line_pos.x <= screen_width and 0 <= line_pos.y <= screen_height:
             nxt_lines.append([line_pos.x, line_pos.y, line_bearing])
     
     lines = nxt_lines
@@ -92,9 +98,9 @@ while running:
         rect_dx = randint(-3, 3) * 7
         rect_dy = randint(-3, 3) * 7
 
-        if 0 <= rect_pos.x + rect_dx <= 1280:
+        if 0 <= rect_pos.x + rect_dx <= screen_width:
             rect_pos.x += rect_dx
-        if 0 <= rect_pos.y + rect_dy <= 720:
+        if 0 <= rect_pos.y + rect_dy <= screen_height:
             rect_pos.y += rect_dy
 
     # flip() the display to put your work on screen
