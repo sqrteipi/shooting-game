@@ -9,7 +9,7 @@ screen_height = 720
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
-running = True
+
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
@@ -42,6 +42,8 @@ def itlc(x0, y0, r, x1, y1, x2, y2):
         return True 
     return False  
 
+running = True
+
 while running:
 
     # Close Window Button
@@ -71,7 +73,7 @@ while running:
             player_pos.x += 300 * dt
 
     # Creating enemies
-    for _ in range(3):
+    while len(rects) < 3:
         rects.append(pygame.Vector2(randint(0, screen_width), randint(0, screen_height)))
 
     # Drawing Enemies
@@ -124,7 +126,7 @@ while running:
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
-    
+
     dt = clock.tick(60) / 1000
     time += 1 # time -> Number of loops
 
