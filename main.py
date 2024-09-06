@@ -70,16 +70,16 @@ def main():
 
         # Player Movements
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
             if player_pos.y > 300 * dt + 30:
                 player_pos.y -= 300 * dt
-        if keys[pygame.K_s]:
-            if player_pos.y < screen_height - 300 * dt - 30:
-                player_pos.y += 300 * dt
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             if player_pos.x > 300 * dt + 30:
                 player_pos.x -= 300 * dt
-        if keys[pygame.K_d]:
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            if player_pos.y < screen_height - 300 * dt - 30:
+                player_pos.y += 300 * dt
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             if player_pos.x < screen_width - 300 * dt - 30:
                 player_pos.x += 300 * dt
 
