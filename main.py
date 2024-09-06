@@ -6,20 +6,9 @@ from random import randint
 # pygame setup
 screen_width = 1280 # (maybe later need change screen size so i do this sin)
 screen_height = 720
+
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
-clock = pygame.time.Clock()
-
-dt = 0
-
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-rects = []
-lines = []
-line_len = 75
-line_spd = 10
-time = 0
-start_time = pygame.time.get_ticks()
-
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -43,101 +32,121 @@ def itlc(x0, y0, r, x1, y1, x2, y2):
         return True 
     return False  
 
-running = True
 
-while running:
+def main():
 
-    # Close Window Button
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    clock = pygame.time.Clock()
 
-    # Background Color
-    screen.fill("black")
+    dt = 0
 
-    # Showing Timer
-    current_time = pygame.time.get_ticks()
-    elapsed_time = round((current_time - start_time) / 1000, 3)
-    timer_text = pygame.font.Font(None, 72).render(f"Time: {elapsed_time}", True, (255, 255, 255))
-    screen.blit(timer_text, (30, 30))
-    
-    # Player properties
-    pygame.draw.circle(screen, "white", player_pos, 30)
+    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+    rects = []
+    lines = []
+    line_len = 75
+    line_spd = 10
+    time = 0
+    start_time = pygame.time.get_ticks()
 
-    # Player Movements
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        if player_pos.y > 300 * dt + 30:
-            player_pos.y -= 300 * dt
-    if keys[pygame.K_s]:
-        if player_pos.y < screen_height - 300 * dt - 30:
-            player_pos.y += 300 * dt
-    if keys[pygame.K_a]:
-        if player_pos.x > 300 * dt + 30:
-            player_pos.x -= 300 * dt
-    if keys[pygame.K_d]:
-        if player_pos.x < screen_width - 300 * dt - 30:
-            player_pos.x += 300 * dt
+    running = True
 
-    # Creating enemies
-    while len(rects) < 3:
-        rects.append(pygame.Vector2(randint(0, screen_width), randint(0, screen_height)))
+    while running:
 
-    # Drawing Enemies
-    for rect_pos in rects:
-        pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
-    
-    # Create bullet from enemy
-    if time >= 80 and time % 40 == 0:
+        # Close Window Button
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Background Color
+        screen.fill("black")
+
+        # Showing Timer
+        current_time = pygame.time.get_ticks()
+        elapsed_time = round((current_time - start_time) / 1000, 3)
+        timer_text = pygame.font.Font(None, 72).render(f"Time: {elapsed_time}", True, (255, 255, 255))
+        screen.blit(timer_text, (30, 30))
+        
+        # Player properties
+        pygame.draw.circle(screen, "white", player_pos, 30)
+
+        # Player Movements
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            if player_pos.y > 300 * dt + 30:
+                player_pos.y -= 300 * dt
+        if keys[pygame.K_s]:
+            if player_pos.y < screen_height - 300 * dt - 30:
+                player_pos.y += 300 * dt
+        if keys[pygame.K_a]:
+            if player_pos.x > 300 * dt + 30:
+                player_pos.x -= 300 * dt
+        if keys[pygame.K_d]:
+            if player_pos.x < screen_width - 300 * dt - 30:
+                player_pos.x += 300 * dt
+
+        # Creating enemies
+        while len(rects) < 3:
+            rects.append(pygame.Vector2(randint(0, screen_width), randint(0, screen_height)))
+
+        # Drawing Enemies
         for rect_pos in rects:
-            for deg in range(0, 360, 45):
-                lines.append([rect_pos.x, rect_pos.y, deg])
+            pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+        
+        # Create bullet from enemy
+        if time >= 180 and time % 45 == 0:
+            for rect_pos in rects:
+                for deg in range(0, 360, 45):
+                    lines.append([rect_pos.x, rect_pos.y, deg])
 
-    nxt_lines = []
-    for line in lines:
+        nxt_lines = []
+        for line in lines:
 
-        # Drawing bullets
-        line_pos, line_bearing = pygame.Vector2(line[0], line[1]), line[2]
-        end_pos = pygame.Vector2(line_pos.x + line_len * cos(radians(line_bearing)), line_pos.y - line_len * sin(radians(line_bearing)))
-        pygame.draw.line(screen, "white", line_pos, end_pos, 5)
+            # Drawing bullets
+            line_pos, line_bearing = pygame.Vector2(line[0], line[1]), line[2]
+            end_pos = pygame.Vector2(line_pos.x + line_len * cos(radians(line_bearing)), line_pos.y - line_len * sin(radians(line_bearing)))
+            pygame.draw.line(screen, "white", line_pos, end_pos, 5)
 
-        # Check if collides
-        if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
-            while running:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
+            # Check if collides
+            if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
+                while True:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            quit()
+                    
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_r]:
+                        main()
 
-        # Moving the bullet
-        line_pos.x += line_spd * cos(radians(line_bearing))
-        line_pos.y -= line_spd * sin(radians(line_bearing))
+            # Moving the bullet
+            line_pos.x += line_spd * cos(radians(line_bearing))
+            line_pos.y -= line_spd * sin(radians(line_bearing))
 
-        # Delete bullets / Out of screen
-        if 0 <= line_pos.x <= screen_width and 0 <= line_pos.y <= screen_height:
-            nxt_lines.append([line_pos.x, line_pos.y, line_bearing])
-    
-    lines = nxt_lines
+            # Delete bullets / Out of screen
+            if 0 <= line_pos.x <= screen_width and 0 <= line_pos.y <= screen_height:
+                nxt_lines.append([line_pos.x, line_pos.y, line_bearing])
+        
+        lines = nxt_lines
 
-    for rect_pos in rects:
+        for rect_pos in rects:
 
-        # Enemy random movement
-        rect_dx = randint(-1, 1) * 5
-        rect_dy = randint(-1, 1) * 5
+            # Enemy random movement
+            rect_dx = randint(-1, 1) * 5
+            rect_dy = randint(-1, 1) * 5
 
-        # Set Boundaries for the enemy
-        if 0 <= rect_pos.x + rect_dx <= screen_width:
-            rect_pos.x += rect_dx
-        if 0 <= rect_pos.y + rect_dy <= screen_height:
-            rect_pos.y += rect_dy
+            # Set Boundaries for the enemy
+            if 0 <= rect_pos.x + rect_dx <= screen_width:
+                rect_pos.x += rect_dx
+            if 0 <= rect_pos.y + rect_dy <= screen_height:
+                rect_pos.y += rect_dy
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+        # flip() the display to put your work on screen
+        pygame.display.flip()
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
+        # limits FPS to 60
+        # dt is delta time in seconds since last frame, used for framerate-
+        # independent physics.
 
-    dt = clock.tick(60) / 1000
-    time += 1 # time -> Number of loops
+        dt = clock.tick(60) / 1000
+        time += 1 # time -> Number of loops
 
+main()
 pygame.quit()
