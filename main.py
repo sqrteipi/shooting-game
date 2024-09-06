@@ -74,7 +74,7 @@ while running:
     
     if time >= 80 and time % 40 == 0:
         for rect_pos in rects:
-            for deg in range(0, 360, 15):
+            for deg in range(0, 360, 45):
                 lines.append([rect_pos.x, rect_pos.y, deg])
 
     nxt_lines = []
@@ -95,8 +95,8 @@ while running:
     lines = nxt_lines
 
     for rect_pos in rects:
-        rect_dx = randint(-3, 3) * 7
-        rect_dy = randint(-3, 3) * 7
+        rect_dx = randint(-1, 1) * 5
+        rect_dy = randint(-1, 1) * 5
 
         if 0 <= rect_pos.x + rect_dx <= screen_width:
             rect_pos.x += rect_dx
