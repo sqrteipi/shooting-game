@@ -18,6 +18,7 @@ lines = []
 line_len = 75
 line_spd = 10
 time = 0
+start_time = pygame.time.get_ticks()
 
 
 # Check if a line intersects with a circle
@@ -54,6 +55,12 @@ while running:
     # Background Color
     screen.fill("black")
 
+    # Showing Timer
+    current_time = pygame.time.get_ticks()
+    elapsed_time = round((current_time - start_time) / 1000, 3)
+    timer_text = pygame.font.Font(None, 72).render(f"Time: {elapsed_time}", True, (255, 255, 255))
+    screen.blit(timer_text, (30, 30))
+    
     # Player properties
     pygame.draw.circle(screen, "white", player_pos, 30)
 
@@ -96,7 +103,10 @@ while running:
 
         # Check if collides
         if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
-            running = False
+            while running:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
 
         # Moving the bullet
         line_pos.x += line_spd * cos(radians(line_bearing))
