@@ -4,11 +4,14 @@ from math import radians, sin, cos, sqrt
 from random import randint
 
 # pygame setup
-screen_width = 1280 # (maybe later need change screen size so i do this sin)
+screen_width = 1280
 screen_height = 720
 
 pygame.init()
+pygame.font.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+default_font = pygame.font.Font(None, 72)
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -30,7 +33,14 @@ def itlc(x0, y0, r, x1, y1, x2, y2):
 
     if (0 <= t1 <= 1) or (0 <= t2 <= 1):
         return True 
-    return False  
+    return False 
+
+# Drawing button with text
+def dbwt(screen, button_rect, text, font, text_color, button_color):
+    pygame.draw.rect(screen, button_color, button_rect)
+    text_surface = font.render(text, True, text_color)
+    text_rect = text_surface.get_rect(center=button_rect.center)
+    screen.blit(text_surface, text_rect) 
 
 
 def main():
@@ -62,7 +72,7 @@ def main():
         # Showing Timer
         current_time = pygame.time.get_ticks()
         elapsed_time = round((current_time - start_time) / 1000, 3)
-        timer_text = pygame.font.Font(None, 72).render(f"Time: {elapsed_time}", True, (255, 255, 255))
+        timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
         screen.blit(timer_text, (30, 30))
         
         # Player properties
@@ -107,14 +117,32 @@ def main():
 
             # Check if collides
             if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
+                restart_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
+                pygame.draw.rect(screen, "white", restart_button)
+
                 while True:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             quit()
                     
                     keys = pygame.key.get_pressed()
+                    mouse_pos = pygame.mouse.get_pos()
+
+                    # Button colour change when hover
+                    if restart_button.collidepoint(mouse_pos):
+                        dbwt(screen, restart_button, "Restart", default_font, "black", "gray69")
+                    else:
+                        dbwt(screen, restart_button, "Restart", default_font, "black", "white")
+
+
+                    # Restart game
                     if keys[pygame.K_r]:
                         main()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if restart_button.collidepoint(mouse_pos):
+                            main()
+                    
+                    pygame.display.flip()
 
             # Moving the bullet
             line_pos.x += line_spd * cos(radians(line_bearing))
