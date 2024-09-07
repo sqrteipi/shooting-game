@@ -117,6 +117,8 @@ def main():
 
             # Check if collides
             if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
+
+                # Restart Button
                 restart_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
                 pygame.draw.rect(screen, "white", restart_button)
 
