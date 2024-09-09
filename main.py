@@ -42,8 +42,43 @@ def dbwt(screen, button_rect, text, font, text_color, button_color):
     text_rect = text_surface.get_rect(center=button_rect.center)
     screen.blit(text_surface, text_rect) 
 
-
+# Main screen
 def main():
+
+    # Start button
+    screen.fill("black")
+    start_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
+    pygame.draw.rect(screen, "white", start_button)
+    dbwt(screen, start_button, "Start Game", default_font, "black", "white")
+
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+                    
+            keys = pygame.key.get_pressed()
+            mouse_pos = pygame.mouse.get_pos()
+
+            # Button colour change when hover
+            if start_button.collidepoint(mouse_pos):
+                dbwt(screen, start_button, "Start Game", default_font, "black", "gray69")
+            else:
+                dbwt(screen, start_button, "Start Game", default_font, "black", "white")
+
+
+            # Start game
+            if keys[pygame.K_RETURN]:
+                game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button.collidepoint(mouse_pos):
+                    game()
+                    
+        pygame.display.flip()
+
+
+# Inside the game
+def game():
 
     clock = pygame.time.Clock()
 
@@ -121,6 +156,7 @@ def main():
                 # Restart Button
                 restart_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
                 pygame.draw.rect(screen, "white", restart_button)
+                dbwt(screen, restart_button, "Restart", default_font, "black", "white")
 
                 while True:
                     for event in pygame.event.get():
@@ -139,11 +175,15 @@ def main():
 
                     # Restart game
                     if keys[pygame.K_r]:
-                        main()
+                        game()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if restart_button.collidepoint(mouse_pos):
-                            main()
-                    
+                            game()
+
+                    # Back to main screen
+                    if keys[pygame.K_ESCAPE]:
+                        main()
+                        
                     pygame.display.flip()
 
             # Moving the bullet
