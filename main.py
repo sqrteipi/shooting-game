@@ -2,6 +2,7 @@
 import pygame
 from math import radians, sin, cos, sqrt
 from random import randint
+import sys
 
 # pygame setup
 screen_width = 1280
@@ -9,6 +10,7 @@ screen_height = 720
 
 pygame.init()
 pygame.font.init()
+pygame.display.set_caption("shooting game (testing)")
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 default_font = pygame.font.Font(None, 72)
@@ -47,7 +49,7 @@ def main():
 
     # Start button
     screen.fill("black")
-    start_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
+    start_button = pygame.Rect(screen_width/2-200, screen_height/2-50, 400, 100)
     pygame.draw.rect(screen, "white", start_button)
     dbwt(screen, start_button, "Start Game", default_font, "black", "white")
 
@@ -100,6 +102,7 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                sys.exit()
 
         # Background Color
         screen.fill("black")
@@ -127,6 +130,10 @@ def game():
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             if player_pos.x < screen_width - 300 * dt - 30:
                 player_pos.x += 300 * dt
+        
+        # In-game options menu
+        # if keys[pygame.K_ESCAPE]:
+            # UI design work, delay it first
 
         # Creating enemies
         while len(rects) < 3:
@@ -154,9 +161,11 @@ def game():
             if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
 
                 # Restart Button
-                restart_button = pygame.Rect(screen_width/2-150, screen_height/2-50, 300, 100)
+                restart_button = pygame.Rect(screen_width/2-200, screen_height/2-150, 400, 100)
+                back_button = pygame.Rect(screen_width/2-200, screen_height/2+50, 400, 100)
                 pygame.draw.rect(screen, "white", restart_button)
                 dbwt(screen, restart_button, "Restart", default_font, "black", "white")
+                dbwt(screen, back_button, "Back to menu", default_font, "black", "white")
 
                 while True:
                     for event in pygame.event.get():
@@ -171,7 +180,11 @@ def game():
                         dbwt(screen, restart_button, "Restart", default_font, "black", "gray69")
                     else:
                         dbwt(screen, restart_button, "Restart", default_font, "black", "white")
-
+                    
+                    if back_button.collidepoint(mouse_pos):
+                        dbwt(screen, back_button, "Back to menu", default_font, "black", "gray69")
+                    else:
+                        dbwt(screen, back_button, "Back to menu", default_font, "black", "white")
 
                     # Restart game
                     if keys[pygame.K_r]:
@@ -183,6 +196,9 @@ def game():
                     # Back to main screen
                     if keys[pygame.K_ESCAPE]:
                         main()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if back_button.collidepoint(mouse_pos):
+                            main()
                         
                     pygame.display.flip()
 
