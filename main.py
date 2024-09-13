@@ -49,10 +49,9 @@ def main():
 
     # Start button
     screen.fill("black")
-    start_button = pygame.Rect(screen_width/2-200, screen_height/2-50, 400, 100)
+    start_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 - 50, 400, 100)
     pygame.draw.rect(screen, "white", start_button)
     dbwt(screen, start_button, "Start Game", default_font, "black", "white")
-
 
     while True:
         for event in pygame.event.get():
@@ -72,6 +71,7 @@ def main():
             # Start game
             if keys[pygame.K_RETURN]:
                 game()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(mouse_pos):
                     game()
@@ -86,7 +86,8 @@ def game():
 
     dt = 0
 
-    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+    player_pos = pygame.Vector2(screen.get_width() // 2, screen.get_height() // 2)
+    player_size = 30
     rects = []
     lines = []
     line_len = 75
@@ -114,21 +115,25 @@ def game():
         screen.blit(timer_text, (30, 30))
         
         # Player properties
-        pygame.draw.circle(screen, "white", player_pos, 30)
+        pygame.draw.circle(screen, "white", player_pos, player_size)
 
         # Player Movements
         keys = pygame.key.get_pressed()
+
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if player_pos.y > 300 * dt + 30:
+            if player_pos.y > 300 * dt + player_size:
                 player_pos.y -= 300 * dt
+
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if player_pos.x > 300 * dt + 30:
+            if player_pos.x > 300 * dt + player_size:
                 player_pos.x -= 300 * dt
+
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if player_pos.y < screen_height - 300 * dt - 30:
+            if player_pos.y < screen_height - 300 * dt - player_size:
                 player_pos.y += 300 * dt
+
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if player_pos.x < screen_width - 300 * dt - 30:
+            if player_pos.x < screen_width - 300 * dt - player_size:
                 player_pos.x += 300 * dt
         
         # In-game options menu
@@ -158,11 +163,11 @@ def game():
             pygame.draw.line(screen, "white", line_pos, end_pos, 5)
 
             # Check if collides
-            if itlc(player_pos.x, player_pos.y, 30, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
+            if itlc(player_pos.x, player_pos.y, player_size, line_pos.x, line_pos.y, end_pos.x, end_pos.y):
 
                 # Restart Button
-                restart_button = pygame.Rect(screen_width/2-200, screen_height/2-150, 400, 100)
-                back_button = pygame.Rect(screen_width/2-200, screen_height/2+50, 400, 100)
+                restart_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 - 150, 400, 100)
+                back_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 + 50, 400, 100)
                 pygame.draw.rect(screen, "white", restart_button)
                 dbwt(screen, restart_button, "Restart", default_font, "black", "white")
                 dbwt(screen, back_button, "Back to menu", default_font, "black", "white")
@@ -189,6 +194,7 @@ def game():
                     # Restart game
                     if keys[pygame.K_r]:
                         game()
+
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if restart_button.collidepoint(mouse_pos):
                             game()
@@ -196,6 +202,7 @@ def game():
                     # Back to main screen
                     if keys[pygame.K_ESCAPE]:
                         main()
+
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if back_button.collidepoint(mouse_pos):
                             main()
