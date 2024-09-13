@@ -168,7 +168,7 @@ def game():
                 # Restart Button
                 restart_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 - 150, 400, 100)
                 back_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 + 50, 400, 100)
-                pygame.draw.rect(screen, "white", restart_button)
+
                 dbwt(screen, restart_button, "Restart", default_font, "black", "white")
                 dbwt(screen, back_button, "Back to menu", default_font, "black", "white")
 
