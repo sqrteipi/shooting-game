@@ -1,7 +1,7 @@
 # Module Importing
 import pygame
 from math import radians, sin, cos, sqrt
-from random import randint
+from random import randint, uniform
 import sys
 
 # pygame setup
@@ -96,8 +96,7 @@ def game():
     start_time = pygame.time.get_ticks()
 
     # Creating enemies
-    while len(rects) < 3:
-        rects.append([pygame.Vector2(randint(0, screen_width), randint(0, screen_height)), 0])
+    rects.append([pygame.Vector2(randint(0, screen_width), randint(0, screen_height)), 0, uniform(0, 360)])
         
     running = True
 
@@ -145,12 +144,12 @@ def game():
             # UI design work, delay it first
 
         # Drawing Enemies
-        for rect_pos in rects:
+        for rect_pos, type, dir in rects:
             pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
         
         # Create bullet from enemy
         if time >= 180 and time % 45 == 0:
-            for rect_pos in rects:
+            for rect_pos, type, dir in rects:
                 for deg in range(0, 360, 45):
                     lines.append([rect_pos.x, rect_pos.y, deg])
 
@@ -219,18 +218,23 @@ def game():
         
         lines = nxt_lines
 
-        for rect_pos in rects:
-
-            # Enemy random movement
-            rect_dx = randint(-1, 1) * 5
-            rect_dy = randint(-1, 1) * 5
+        nxt_rects = []
+        for rect_pos, type, dir in rects:
+            rect_dx = cos(radians(dir)) * 10
+            rect_dy = sin(radians(dir)) * 10
 
             # Set Boundaries for the enemy
-            if 0 <= rect_pos.x + rect_dx <= screen_width:
-                rect_pos.x += rect_dx
-            if 0 <= rect_pos.y + rect_dy <= screen_height:
-                rect_pos.y += rect_dy
+            while not (0 <= rect_pos.x + rect_dx <= screen_width and 0 <= rect_pos.y + rect_dy <= screen_height):
+                dir = uniform(0, 360)
+                rect_dx = cos(radians(dir)) * 10
+                rect_dy = sin(radians(dir)) * 10
 
+            rect_pos.x += rect_dx
+            rect_pos.y += rect_dy
+            nxt_rects.append([rect_pos, type, dir])
+        
+        rects = nxt_rects
+        
         # flip() the display to put your work on screen
         pygame.display.flip()
 
