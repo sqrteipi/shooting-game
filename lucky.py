@@ -94,6 +94,7 @@ def game():
                                 screen.get_height() // 2)
     player_size = 30
     player_spd = 300
+    enemy_spd = 10
     rects = []
     lines = []
     lucky_block = []
@@ -115,21 +116,6 @@ def game():
 
     while running:
 
-        if status > 0:
-            if 0 <= status_rand <= 25:
-                player_spd = min(player_spd + 15, 500)
-            elif 25 <= status_rand <= 50:
-                player_spd = max(player_spd - 15, 200)
-            elif 50 <= status_rand <= 75:
-                player_size = min(player_size + 1, 45)
-            elif 75 <= status_rand <= 100:
-                player_size = max(player_size - 1, 20)
-        else:
-            player_spd = max(player_spd - 10, 300)
-            player_spd = min(player_spd + 10, 300)
-            player_size = max(player_spd - 1, 30)
-            player_size = min(player_spd + 1, 30)
-
         # Close Window Button
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,6 +132,25 @@ def game():
         timer_text = default_font.render(f"Time: {elapsed_time}", True,
                                          (255, 255, 255))
         screen.blit(timer_text, (30, 30))
+
+        if status > 0:
+            enemy_spd = max(enemy_spd - 0.5, 5)
+            line_spd = max(line_spd - 0.5, 5)
+            # if 0 <= status_rand <= 25:
+            #     player_spd = min(player_spd + 15, 500)
+            # elif 25 <= status_rand <= 50:
+            #     player_spd = max(player_spd - 15, 200)
+            # elif 50 <= status_rand <= 75:
+            #     player_size = min(player_size + 1, 45)
+            # elif 75 <= status_rand <= 100:
+            #     player_size = max(player_size - 1, 20)
+        else:
+            player_spd = max(player_spd - 10, 300)
+            player_spd = min(player_spd + 10, 300)
+            player_size = max(player_spd - 1, 30)
+            player_size = min(player_spd + 1, 30)
+            enemy_spd = min(enemy_spd + 0.5, 10)
+            line_spd = min(line_spd + 0.5, 10)
 
         # Player properties
         pygame.draw.circle(screen, "white", player_pos, player_size)
@@ -265,15 +270,15 @@ def game():
 
         nxt_rects = []
         for rect_pos, type, dir in rects:
-            rect_dx = cos(radians(dir)) * 10
-            rect_dy = sin(radians(dir)) * 10
+            rect_dx = cos(radians(dir)) * enemy_spd
+            rect_dy = sin(radians(dir)) * enemy_spd
 
             # Set Boundaries for the enemy
             while not (0 <= rect_pos.x + rect_dx <= screen_width
                        and 0 <= rect_pos.y + rect_dy <= screen_height):
                 dir = uniform(0, 360)
-                rect_dx = cos(radians(dir)) * 10
-                rect_dy = sin(radians(dir)) * 10
+                rect_dx = cos(radians(dir)) * enemy_spd
+                rect_dy = sin(radians(dir)) * enemy_spd
 
             rect_pos.x += rect_dx
             rect_pos.y += rect_dy
@@ -281,11 +286,14 @@ def game():
 
         rects = nxt_rects
 
+        # Create Lucky Block
         if len(lucky_block) == 0 and status == -150:
             posx, posy = randint(0, screen_width), randint(0, screen_height)
             lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
             lucky_block.append(lucky_square)
         
+
+        # Update Lucky Block
         lucky_block2 = []
         for lucky_square in lucky_block:
             if not lucky_square.collidepoint(player_pos):
