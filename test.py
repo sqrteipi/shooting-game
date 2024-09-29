@@ -140,8 +140,55 @@ def game():
                 player_pos.x += 300 * dt
         
         # In-game options menu
-        # if keys[pygame.K_ESCAPE]:
-            # UI design work, delay it first
+        if keys[pygame.K_ESCAPE]:
+
+            show_options = True
+            esc_count = 1
+
+            # Resume button
+            resume_button = pygame.Rect(screen_width // 2 - 200, screen_height // 2 - 150, 400, 100)
+            dbwt(screen, resume_button, "Resume", default_font, "black", "white")
+
+            while show_options:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                        sys.exit()
+                keys = pygame.key.get_pressed()
+                mouse_pos = pygame.mouse.get_pos()
+
+                # Button colour change when hover
+                if resume_button.collidepoint(mouse_pos):
+                    dbwt(screen, resume_button, "Resume", default_font, "black", "gray69")
+                    pygame.display.flip()
+                else:
+                    dbwt(screen, resume_button, "Resume", default_font, "black", "white")
+                    pygame.display.flip()
+                
+                # if keys[pygame.K_ESCAPE]:
+                #     esc_count += 1
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if resume_button.collidepoint(mouse_pos):
+                        show_options = False
+
+                if esc_count > 1:
+                    show_options = False
+
+                pygame.display.flip()
+            
+            screen.fill((0, 0, 0))
+            pygame.draw.circle(screen, "white", player_pos, player_size)
+            for rect_pos, type, dir in rects:
+                pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+            for line in lines:
+                line_pos, line_bearing = pygame.Vector2(line[0], line[1]), line[2]
+                end_pos = pygame.Vector2(line_pos.x + line_len * cos(radians(line_bearing)), line_pos.y - line_len * sin(radians(line_bearing)))
+                pygame.draw.line(screen, "white", line_pos, end_pos, 5)
+            pygame.display.flip()
+
+            # Countdown
+            
 
         # Drawing Enemies
         for rect_pos, type, dir in rects:

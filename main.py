@@ -139,10 +139,8 @@ def game():
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             if player_pos.x < screen_width - 300 * dt - player_size:
                 player_pos.x += 300 * dt
-        
-        # In-game options menu
-        # if keys[pygame.K_ESCAPE]:
-            # UI design work, delay it first
+
+        # UI design work, delay it first
 
         # Drawing Enemies
         for rect_pos in rects:
