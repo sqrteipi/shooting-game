@@ -288,7 +288,7 @@ def game():
 
         # Create Lucky Block
         if len(lucky_block) == 0 and status == -150:
-            posx, posy = randint(0, screen_width), randint(0, screen_height)
+            posx, posy = randint(30, screen_width - 30), randint(30, screen_height - 30)
             lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
             lucky_block.append(lucky_square)
         
