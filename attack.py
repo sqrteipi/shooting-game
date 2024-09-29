@@ -15,6 +15,8 @@ t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 72)
 
+debug_mode = True
+
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -82,6 +84,9 @@ def main():
             # Start game
             if keys[pygame.K_RETURN]:
                 game()
+            
+            if keys[pygame.K_ESCAPE]:
+                sys.exit()
 
             if mouse_click[0]:
                 if start_button.collidepoint(mouse_pos):
@@ -91,6 +96,9 @@ def main():
 
 
 def restart(start_time):
+
+    if debug_mode == True:
+        return
 
     screen.fill("black")
     show_timer(start_time)
@@ -163,9 +171,12 @@ def game():
     rects = []
     lines = []
     t_lines = []
+    bubbles = []
     line_len = 75
     line_spd = 10
     start_time = pygame.time.get_ticks()
+    bullet_reload = 45
+    bullet_angle = 45
 
     # Creating enemies
     rects.append([
@@ -223,7 +234,8 @@ def game():
         # Create bullet from enemy
         if time >= 180 and time % 45 == 0:
             for rect_pos, type, dir in rects:
-                for deg in range(0, 360, 45):
+                for i in range(round(360/bullet_angle)):
+                    deg = bullet_angle*i
                     lines.append([rect_pos.x, rect_pos.y, deg])
 
         nxt_lines = []
@@ -252,9 +264,11 @@ def game():
 
         lines = nxt_lines
 
-        # Drawing semi-transparent attacks
+        # Attack Screen Initialize
         t_screen.fill((0, 0, 0, 0))
         screen.blit(t_screen, (0, 0))
+
+        # Drawing X-Rays
         for t_line in t_lines:
             if t_line[4] > time:
                 pygame.draw.line(t_screen, (255, 255, 255, 128),
@@ -273,10 +287,10 @@ def game():
                                  [t_line[2], t_line[3]], 5)
                 t_lines.remove(t_line)
 
-        # Random chance attack
-        random_float = uniform(0, 1000)
-        if random_float > 480 and random_float <= 520:
-            if random_float < 500:
+        # Random - X-Ray
+        xray_random = uniform(0, 1000)
+        if xray_random > 480 and xray_random <= 520:
+            if xray_random < 500:
                 t_lines.append([
                     0,
                     round(uniform(0, screen_height)), screen_width,
@@ -289,6 +303,21 @@ def game():
                     round(uniform(0, screen_width)), screen_height,
                     time + round(uniform(25, 50))
                 ])
+
+        # Drawing Bubblers
+        for bubble in bubbles:
+            if bubble[3] > time:
+                pygame.draw.rect(t_screen, (255, 255, 255, 128), (bubble[0], bubble[1], bubble[2], bubble[2]))
+            elif bubble[3] > time-60:
+                pygame.draw.rect(t_screen, (255, 255, 255, 255), (bubble[0], bubble[1], bubble[2], bubble[2]))
+            else:
+                pygame.draw.rect(t_screen, (255, 255, 255, 0), (bubble[0], bubble[1], bubble[2], bubble[2]))
+                bubbles.remove(bubble)
+
+        # Random - Bubbler
+        bubbler_random = uniform(0, 1000)
+        if bubbler_random > 495 and bubbler_random < 505:
+            bubbles.append([round(uniform(0, screen_width-70)), round(uniform(0, screen_height-70)), round(uniform(30, 70)), time+round(uniform(25, 50))])
 
         nxt_rects = []
         for rect_pos, type, dir in rects:
@@ -315,6 +344,9 @@ def game():
         # limits FPS to 60
         # dt is delta time in seconds since last frame, used for framerate-
         # independent physics.
+
+        if time > 180 and time % 1000 == 0:
+            bullet_angle /= 2
 
         dt = clock.tick(60) / 1000
         time += 1  # time -> Number of loops

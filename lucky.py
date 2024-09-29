@@ -86,6 +86,7 @@ def main():
 
 # Inside the game
 def game():
+
     clock = pygame.time.Clock()
 
     dt = 0
@@ -93,16 +94,12 @@ def game():
     player_pos = pygame.Vector2(screen.get_width() // 2,
                                 screen.get_height() // 2)
     player_size = 30
-    player_spd = 300
     rects = []
     lines = []
     lucky_block = []
     line_len = 75
     line_spd = 10
     time = 0
-    status = 0
-    status_rand = 0
-    develop = True
     start_time = pygame.time.get_ticks()
 
     # Creating enemies
@@ -114,21 +111,6 @@ def game():
     running = True
 
     while running:
-
-        if status > 0:
-            if 0 <= status_rand <= 25:
-                player_spd = min(player_spd + 15, 500)
-            elif 25 <= status_rand <= 50:
-                player_spd = max(player_spd - 15, 200)
-            elif 50 <= status_rand <= 75:
-                player_size = min(player_size + 1, 45)
-            elif 75 <= status_rand <= 100:
-                player_size = max(player_size - 1, 20)
-        else:
-            player_spd = max(player_spd - 10, 300)
-            player_spd = min(player_spd + 10, 300)
-            player_size = max(player_spd - 1, 30)
-            player_size = min(player_spd + 1, 30)
 
         # Close Window Button
         for event in pygame.event.get():
@@ -154,20 +136,20 @@ def game():
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if player_pos.y > player_spd * dt + player_size:
-                player_pos.y -= player_spd * dt
+            if player_pos.y > 300 * dt + player_size:
+                player_pos.y -= 300 * dt
 
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if player_pos.x > player_spd * dt + player_size:
-                player_pos.x -= player_spd * dt
+            if player_pos.x > 300 * dt + player_size:
+                player_pos.x -= 300 * dt
 
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if player_pos.y < screen_height - player_spd * dt - player_size:
-                player_pos.y += player_spd * dt
+            if player_pos.y < screen_height - 300 * dt - player_size:
+                player_pos.y += 300 * dt
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if player_pos.x < screen_width - player_spd * dt - player_size:
-                player_pos.x += player_spd * dt
+            if player_pos.x < screen_width - 300 * dt - player_size:
+                player_pos.x += 300 * dt
 
         # In-game options menu
         # if keys[pygame.K_ESCAPE]:
@@ -181,7 +163,7 @@ def game():
         # Create bullet from enemy
         if time >= 180 and time % 45 == 0:
             for rect_pos, type, dir in rects:
-                for deg in range(0, 360, 90):
+                for deg in range(0, 360, 45):
                     lines.append([rect_pos.x, rect_pos.y, deg])
 
         nxt_lines = []
@@ -197,9 +179,7 @@ def game():
             # Check if collides
             if itlc(player_pos.x, player_pos.y, player_size, line_pos.x,
                     line_pos.y, end_pos.x, end_pos.y):
-                
-                if develop:
-                    continue
+
                 # Restart Button
                 restart_button = pygame.Rect(screen_width // 2 - 200,
                                              screen_height // 2 - 150, 400,
@@ -281,23 +261,15 @@ def game():
 
         rects = nxt_rects
 
-        if len(lucky_block) == 0 and status == -150:
+        if len(lucky_block) == 0:
             posx, posy = randint(0, screen_width), randint(0, screen_height)
             lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
-            lucky_block.append(lucky_square)
-        
-        lucky_block2 = []
-        for lucky_square in lucky_block:
-            if not lucky_square.collidepoint(player_pos):
-                lucky_block2.append(lucky_square)
-                dbwt(screen, lucky_square, "", default_font, "White", "Yellow")
-            else :
-                status = 150
-                status_rand = uniform(0, 100)
-        
-        lucky_block = lucky_block2
-        status -= 1
+            lucky_block = [lucky_square]
 
+        for lucky_square in lucky_block:
+            if time >= 160:
+                continue
+            dbwt(screen, lucky_square, "", default_font, "White", "Yellow")
         # flip() the display to put your work on screen
         pygame.display.flip()
 
