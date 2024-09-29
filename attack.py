@@ -274,7 +274,7 @@ def game():
                 t_lines.remove(t_line)
 
         # Random chance attack
-        random_float = uniform(0, 1000)
+        random_float = uniform(0, 10000)
         if random_float > 400 and random_float <= 500:
             if random_float < 499.5:
                 t_lines.append([
