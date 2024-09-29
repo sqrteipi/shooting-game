@@ -7,7 +7,6 @@ import sys
 # pygame setup
 screen_width = 1280
 screen_height = 720
-
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption("shooting game (testing)")
@@ -47,6 +46,11 @@ def dbwt(screen, button_rect, text, font, text_color, button_color):
     text_rect = text_surface.get_rect(center=button_rect.center)
     screen.blit(text_surface, text_rect)
 
+def show_timer(start_time):
+    current_time = pygame.time.get_ticks()
+    elapsed_time = round((current_time - start_time) / 1000, 3)
+    timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
+    screen.blit(timer_text, (30, 30))
 
 # Main screen
 def main():
@@ -86,9 +90,10 @@ def main():
         pygame.display.flip()
 
 
-def restart():
+def restart(start_time):
 
     screen.fill("black")
+    show_timer(start_time)
 
     # Restart Button
     restart_button = pygame.Rect(screen_width // 2 - 200,
@@ -151,7 +156,7 @@ def game():
     clock = pygame.time.Clock()
 
     dt = 0
-
+    time = 0
     player_pos = pygame.Vector2(screen.get_width() // 2,
                                 screen.get_height() // 2)
     player_size = 30
@@ -160,7 +165,6 @@ def game():
     t_lines = []
     line_len = 75
     line_spd = 10
-    time = 0
     start_time = pygame.time.get_ticks()
 
     # Creating enemies
@@ -183,11 +187,7 @@ def game():
         screen.fill("black")
 
         # Showing Timer
-        current_time = pygame.time.get_ticks()
-        elapsed_time = round((current_time - start_time) / 1000, 3)
-        timer_text = default_font.render(f"Time: {elapsed_time}", True,
-                                         (255, 255, 255))
-        screen.blit(timer_text, (30, 30))
+        show_timer(start_time)
 
         # Player properties
         pygame.draw.circle(screen, "white", player_pos, player_size)
@@ -240,7 +240,7 @@ def game():
             if itlc(player_pos.x, player_pos.y, player_size, line_pos.x,
                     line_pos.y, end_pos.x, end_pos.y):
                 
-                restart()
+                restart(start_time)
 
             # Moving the bullet
             line_pos.x += line_spd * cos(radians(line_bearing))
@@ -266,7 +266,7 @@ def game():
                                  [t_line[2], t_line[3]], 5)
                 
                 if itlc(player_pos.x, player_pos.y, player_size, t_line[0], t_line[1], t_line[2], t_line[3]):
-                    restart()
+                    restart(start_time)
             else:
                 pygame.draw.line(t_screen, (255, 255, 255, 0),
                                  [t_line[0], t_line[1]],
@@ -275,19 +275,19 @@ def game():
 
         # Random chance attack
         random_float = uniform(0, 1000)
-        if random_float > 400 and random_float <= 500:
-            if random_float < 499.5:
+        if random_float > 480 and random_float <= 520:
+            if random_float < 500:
                 t_lines.append([
                     0,
                     round(uniform(0, screen_height)), screen_width,
                     round(uniform(0, screen_height)),
-                    time + round(uniform(20, 30))
+                    time + round(uniform(25, 50))
                 ])
             else:
                 t_lines.append([
                     round(uniform(0, screen_width)), 0,
                     round(uniform(0, screen_width)), screen_height,
-                    time + round(uniform(20, 30))
+                    time + round(uniform(25, 50))
                 ])
 
         nxt_rects = []
