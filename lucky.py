@@ -101,6 +101,7 @@ def game():
     lucky_block = []
     line_len = 75
     line_spd = 10
+    status = 0
     time = 0
     start_time = pygame.time.get_ticks()
 
