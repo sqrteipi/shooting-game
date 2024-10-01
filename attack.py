@@ -1,6 +1,6 @@
 # Module Importing
 import pygame
-from math import radians, sin, cos, sqrt
+from math import *
 from random import randint, uniform
 import sys
 
@@ -15,7 +15,7 @@ t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 72)
 
-debug_mode = True
+debug_mode = False
 
 
 # Check if a line intersects with a circle
@@ -176,7 +176,9 @@ def game():
     line_spd = 10
     start_time = pygame.time.get_ticks()
     bullet_reload = 45
-    bullet_angle = 45
+    bullet_amount = 4
+    xray_chance = 10
+    bubble_chance = 10
 
     # Creating enemies
     rects.append([
@@ -232,10 +234,10 @@ def game():
                              (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
 
         # Create bullet from enemy
-        if time >= 180 and time % 45 == 0:
+        if time >= 180 and time % bullet_reload == 0:
             for rect_pos, type, dir in rects:
-                for i in range(round(360/bullet_angle)):
-                    deg = bullet_angle*i
+                for i in range(bullet_amount):
+                    deg = 360/bullet_amount*i
                     lines.append([rect_pos.x, rect_pos.y, deg])
 
         nxt_lines = []
@@ -274,7 +276,7 @@ def game():
                 pygame.draw.line(t_screen, (255, 255, 255, 128),
                                  [t_line[0], t_line[1]],
                                  [t_line[2], t_line[3]], 5)
-            elif t_line[4] > time - 60:
+            elif t_line[4] > time - 40:
                 pygame.draw.line(t_screen, (255, 255, 255, 255),
                                  [t_line[0], t_line[1]],
                                  [t_line[2], t_line[3]], 5)
@@ -289,8 +291,8 @@ def game():
 
         # Random - X-Ray
         xray_random = uniform(0, 1000)
-        if xray_random > 480 and xray_random <= 520:
-            if xray_random < 500:
+        if xray_random <= xray_chance and time > 180:
+            if xray_random < xray_chance/2:
                 t_lines.append([
                     0,
                     round(uniform(0, screen_height)), screen_width,
@@ -315,8 +317,8 @@ def game():
                 bubbles.remove(bubble)
 
         # Random - Bubbler
-        bubbler_random = uniform(0, 1000)
-        if bubbler_random > 495 and bubbler_random < 505:
+        bubble_random = uniform(0, 1000)
+        if bubble_random <= bubble_chance and time > 180:
             bubbles.append([round(uniform(0, screen_width-70)), round(uniform(0, screen_height-70)), round(uniform(30, 70)), time+round(uniform(25, 50))])
 
         nxt_rects = []
@@ -345,8 +347,18 @@ def game():
         # dt is delta time in seconds since last frame, used for framerate-
         # independent physics.
 
-        if time > 180 and time % 1000 == 0:
-            bullet_angle /= 2
+        # Bullets stats changing
+        if time > 0 and time % 1000 == 0:
+            if bullet_amount < 16:
+                bullet_amount += 1
+            if bullet_reload > 10:
+                bullet_reload = ceil(bullet_reload*0.9)
+            if line_spd < 25:
+                line_spd = ceil(line_spd*1.1)
+            if xray_chance < 75:
+                xray_chance *= 1.1
+            if bubble_chance < 75:
+                bubble_chance *= 1.1
 
         dt = clock.tick(60) / 1000
         time += 1  # time -> Number of loops
