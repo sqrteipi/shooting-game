@@ -252,7 +252,7 @@ def game():
 
             # Check if collides
             if itlc(player_pos.x, player_pos.y, player_size, line_pos.x,
-                    line_pos.y, end_pos.x, end_pos.y):
+                    line_pos.y, end_pos.x, end_pos.y) and time < 0:
                 
                 restart(start_time)
 
@@ -276,12 +276,13 @@ def game():
                 pygame.draw.line(t_screen, (255, 255, 255, 128),
                                  [t_line[0], t_line[1]],
                                  [t_line[2], t_line[3]], 5)
-            elif t_line[4] > time - 40:
+            elif t_line[4] > time - 20:
                 pygame.draw.line(t_screen, (255, 255, 255, 255),
                                  [t_line[0], t_line[1]],
                                  [t_line[2], t_line[3]], 5)
-                
+                pygame.display.flip()
                 if itlc(player_pos.x, player_pos.y, player_size, t_line[0], t_line[1], t_line[2], t_line[3]):
+                    pygame.display.flip()
                     restart(start_time)
             else:
                 pygame.draw.line(t_screen, (255, 255, 255, 0),
@@ -297,13 +298,13 @@ def game():
                     0,
                     round(uniform(0, screen_height)), screen_width,
                     round(uniform(0, screen_height)),
-                    time + round(uniform(25, 50))
+                    time + round(uniform(40, 80))
                 ])
             else:
                 t_lines.append([
                     round(uniform(0, screen_width)), 0,
                     round(uniform(0, screen_width)), screen_height,
-                    time + round(uniform(25, 50))
+                    time + round(uniform(40, 80))
                 ])
 
         # Drawing Bubblers
