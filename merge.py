@@ -15,7 +15,7 @@ t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 72)
 
-debug_mode = False
+debug_mode = False # Not die
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -39,7 +39,6 @@ def itlc(x0, y0, r, x1, y1, x2, y2):
         return True
     return False
 
-
 # Drawing button with text
 def dbwt(screen, button_rect, text, font, text_color, button_color):
     pygame.draw.rect(screen, button_color, button_rect)
@@ -47,11 +46,16 @@ def dbwt(screen, button_rect, text, font, text_color, button_color):
     text_rect = text_surface.get_rect(center=button_rect.center)
     screen.blit(text_surface, text_rect)
 
-def show_timer(start_time):
+# Showing Timer
+def show_info(start_time, score):
     current_time = pygame.time.get_ticks()
     elapsed_time = round((current_time - start_time) / 1000, 3)
     timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
     screen.blit(timer_text, (30, 30))
+
+    score = round(elapsed_time * 25 + score * 250)
+    score_text = default_font.render(f"Score: {score}", True, (255, 255, 255))
+    screen.blit(score_text, (30, 78))
 
 # Main screen
 def main():
@@ -94,13 +98,13 @@ def main():
         pygame.display.flip()
 
 # Restart Screen
-def restart(start_time):
+def restart(start_time, score):
 
     if debug_mode == True:
         return
 
     screen.fill("black")
-    show_timer(start_time)
+    show_info(start_time, score)
 
     # Restart Button
     restart_button = pygame.Rect(screen_width // 2 - 200,
@@ -165,25 +169,31 @@ def game():
     # Time
     dt = 0
     time = 0
+    score = 0
     start_time = pygame.time.get_ticks()
 
     # Player
     player_pos = pygame.Vector2(screen.get_width() // 2,
                                 screen.get_height() // 2)
     player_size = 30
+    player_spd = 300
 
-    # Enemies
+    # Objects
     rects = []
     lines = []
     t_lines = []
+    lucky_block = []
 
     # Bullets
     line_len = 75
     line_spd = 10
-    
     bullet_reload = 45
     bullet_amount = 4
     xray_chance = 10
+
+    enemy_spd = 10
+
+    status = 0
 
     # Creating enemies
     rects.append([
@@ -205,8 +215,30 @@ def game():
         screen.fill("black")
 
         # Showing Timer
-        show_timer(start_time)
+        show_info(start_time, score)
 
+        # Updating Status
+        if status > 0:
+            
+            if 1 <= status_rand <= 1:
+                player_spd = min(player_spd + 15, 500)
+            elif 2 <= status_rand <= 2:
+                player_spd = max(player_spd - 15, 200)
+            elif 3 <= status_rand <= 3:
+                player_size = min(player_size + 1, 45)
+            elif 4 <= status_rand <= 4:
+                player_size = max(player_size - 1, 20)
+            elif 5 <= status_rand <= 5:
+                enemy_spd = max(enemy_spd - 0.5, 5)
+                line_spd = max(line_spd - 0.5, 5)
+        else:
+            player_spd = max(player_spd - 10, 300)
+            player_spd = min(player_spd + 10, 300)
+            player_size = max(player_spd - 1, 30)
+            player_size = min(player_spd + 1, 30)
+            enemy_spd = min(enemy_spd + 0.5, 10)
+            line_spd = min(line_spd + 0.5, 10)
+        
         # Player properties
         pygame.draw.circle(screen, "white", player_pos, player_size)
 
@@ -214,20 +246,20 @@ def game():
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if player_pos.y > 300 * dt + player_size:
-                player_pos.y -= 300 * dt
+            if player_pos.y > player_spd * dt + player_size:
+                player_pos.y -= player_spd * dt
 
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if player_pos.x > 300 * dt + player_size:
-                player_pos.x -= 300 * dt
+            if player_pos.x > player_spd * dt + player_size:
+                player_pos.x -= player_spd * dt
 
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if player_pos.y < screen_height - 300 * dt - player_size:
-                player_pos.y += 300 * dt
+            if player_pos.y < screen_height - player_spd * dt - player_size:
+                player_pos.y += player_spd * dt
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if player_pos.x < screen_width - 300 * dt - player_size:
-                player_pos.x += 300 * dt
+            if player_pos.x < screen_width - player_spd * dt - player_size:
+                player_pos.x += player_spd * dt
 
         # In-game options menu
         # if keys[pygame.K_ESCAPE]:
@@ -258,7 +290,7 @@ def game():
             # Check if collides
             if itlc(player_pos.x, player_pos.y, player_size, line_pos.x,
                     line_pos.y, end_pos.x, end_pos.y):
-                restart(start_time)
+                restart(start_time, score)
 
             # Moving the bullets
             line_pos.x += line_spd * cos(radians(line_bearing))
@@ -287,7 +319,7 @@ def game():
                 pygame.display.flip()
                 if itlc(player_pos.x, player_pos.y, player_size, t_line[0], t_line[1], t_line[2], t_line[3]):
                     pygame.display.flip()
-                    restart(start_time)
+                    restart(start_time, score)
             else:
                 pygame.draw.line(t_screen, (255, 255, 255, 0),
                                  [t_line[0], t_line[1]],
@@ -316,15 +348,15 @@ def game():
         # Moving Enemies
         nxt_rects = []
         for rect_pos, type, dir in rects:
-            rect_dx = cos(radians(dir)) * 10
-            rect_dy = sin(radians(dir)) * 10
+            rect_dx = cos(radians(dir)) * enemy_spd
+            rect_dy = sin(radians(dir)) * enemy_spd
 
             # Set Boundaries for the enemy
             while not (0 <= rect_pos.x + rect_dx <= screen_width
                        and 0 <= rect_pos.y + rect_dy <= screen_height):
                 dir = uniform(0, 360)
-                rect_dx = cos(radians(dir)) * 10
-                rect_dy = sin(radians(dir)) * 10
+                rect_dx = cos(radians(dir)) * enemy_spd
+                rect_dy = sin(radians(dir)) * enemy_spd
 
             rect_pos.x += rect_dx
             rect_pos.y += rect_dy
@@ -332,6 +364,28 @@ def game():
 
         rects = nxt_rects
         
+        # Create Lucky Block
+        if len(lucky_block) == 0 and status == -150:
+            posx, posy = randint(30, screen_width - 30), randint(30, screen_height - 30)
+            lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
+            lucky_block.append(lucky_square)
+
+
+        # Update Lucky Block
+        lucky_block2 = []
+        for lucky_square in lucky_block:
+            if not lucky_square.collidepoint(player_pos):
+                lucky_block2.append(lucky_square)
+                dbwt(screen, lucky_square, "", default_font, "White", "Yellow")
+            else :
+                # Touched Lucky Block
+                status = 150
+                status_rand = randint(1, 5)
+                score += 1
+
+        lucky_block = lucky_block2
+        status -= 1
+
         # Bullets stats changing
         if time > 0 and time % 1000 == 0:
             if bullet_amount < 16:
