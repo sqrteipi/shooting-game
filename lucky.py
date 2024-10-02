@@ -103,7 +103,7 @@ def game():
     time = 0
     status = 0
     status_rand = 0
-    develop = True
+    develop = False
     start_time = pygame.time.get_ticks()
 
     # Creating enemies
@@ -124,7 +124,7 @@ def game():
 
         # Background Color
         screen.fill("black")
-        screen.blit(background, (0, 0))
+        # screen.blit(background, (0, 0))
 
         # Showing Timer
         current_time = pygame.time.get_ticks()
