@@ -13,7 +13,7 @@ pygame.display.set_caption("shooting game (testing)")
 screen = pygame.display.set_mode((screen_width, screen_height))
 t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
-default_font = pygame.font.Font(None, 72)
+default_font = pygame.font.Font(None, 65)
 
 debug_mode = False # Not die
 
