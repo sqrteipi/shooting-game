@@ -48,14 +48,18 @@ def dbwt(screen, button_rect, text, font, text_color, button_color):
 
 # Showing Timer
 def show_info(start_time, score):
+    info_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+    info_screen.fill((0, 0, 0, 255))
     current_time = pygame.time.get_ticks()
     elapsed_time = round((current_time - start_time) / 1000, 3)
-    timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
-    screen.blit(timer_text, (30, 30))
+    timer_text = default_font.render(f"Time: {elapsed_time}", True, (128, 128, 128, 128))
+    info_screen.blit(timer_text, (30, 30))
 
     score = round(elapsed_time * 25 + score * 250)
-    score_text = default_font.render(f"Score: {score}", True, (255, 255, 255))
-    screen.blit(score_text, (30, 78))
+    score_text = default_font.render(f"Score: {score}", True, (128, 128, 128, 128))
+    info_screen.blit(score_text, (30, 78))
+
+    screen.blit(info_screen, (0, 0))
 
 # Main screen
 def main():
@@ -86,14 +90,14 @@ def main():
 
             # Start game
             if keys[pygame.K_RETURN]:
-                game()
+                htp()
             
             if keys[pygame.K_ESCAPE]:
                 sys.exit()
 
             if mouse_click[0]:
                 if start_button.collidepoint(mouse_pos):
-                    game()
+                    htp()
 
         pygame.display.flip()
 
@@ -160,6 +164,49 @@ def restart(start_time, score):
 
         pygame.display.flip()
 
+# How to play
+def htp():
+
+    screen.fill("black")
+    how_to_play_text = pygame.Rect(screen_width // 2 - 250, 100, 500, 100)
+    how_to_play_text_2 = pygame.Rect(screen_width // 2 - 250, 200, 500, 100)
+    dbwt(screen, how_to_play_text, "Use arrow keys or WASD to control.", default_font, "white", "black")
+    dbwt(screen, how_to_play_text_2, "Avoid any bullets or x-rays.", default_font, "white", "black")
+    start_button = pygame.Rect(screen_width // 2 - 200,
+                            screen_height // 2 - 50, 400, 100)
+    pygame.draw.rect(screen, "white", start_button)
+    dbwt(screen, start_button, "Start Game", default_font, "black", "white")
+
+    while True:
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+            keys = pygame.key.get_pressed()
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+
+            # Button colour change when hover
+            if start_button.collidepoint(mouse_pos):
+                dbwt(screen, start_button, "Start Game", default_font, "black",
+                     "gray69")
+            else:
+                dbwt(screen, start_button, "Start Game", default_font, "black",
+                     "white")
+
+            # Start game
+            if keys[pygame.K_RETURN]:
+                game()
+            
+            if keys[pygame.K_ESCAPE]:
+                sys.exit()
+
+            if mouse_click[0]:
+                if start_button.collidepoint(mouse_pos):
+                    game()
+
+        pygame.display.flip()
 
 # Inside the game
 def game():

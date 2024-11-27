@@ -51,8 +51,9 @@ def dbwt(screen, button_rect, text, font, text_color, button_color):
 def show_timer(start_time):
     current_time = pygame.time.get_ticks()
     elapsed_time = round((current_time - start_time) / 1000, 3)
-    timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
-    screen.blit(timer_text, (30, 30))
+    timer_text = default_font.render(f"Time: {elapsed_time}", True, (255, 255, 255, 64))
+    t_screen.blit(timer_text, (30, 30))
+    screen.blit(t_screen, (0, 0))
 
 # Main screen
 def main():
