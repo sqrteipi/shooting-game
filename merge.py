@@ -351,7 +351,7 @@ def game():
 
         # Attack Screen Initialize
         t_screen.fill((0, 0, 0, 0))
-        screen.blit(t_screen, (0, 0))
+        # screen.blit(t_screen, (0, 0))
 
         # Drawing X-Rays
         for t_line in t_lines:
@@ -363,7 +363,7 @@ def game():
                 pygame.draw.line(t_screen, (255, 255, 255, 255),
                                  [t_line[0], t_line[1]],
                                  [t_line[2], t_line[3]], 5)
-                pygame.display.flip()
+                # pygame.display.flip()
                 if itlc(player_pos.x, player_pos.y, player_size, t_line[0], t_line[1], t_line[2], t_line[3]):
                     pygame.display.flip()
                     restart(start_time, score)
