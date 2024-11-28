@@ -174,6 +174,8 @@ def htp():
     dbwt(screen, how_to_play_text_2, "Avoid any bullets or x-rays.", default_font, "white", "black")
     start_button = pygame.Rect(screen_width // 2 - 200,
                             screen_height // 2 - 50, 400, 100)
+    pygame.display.flip()
+    pygame.time.delay(3000)
     pygame.draw.rect(screen, "white", start_button)
     dbwt(screen, start_button, "Start Game", default_font, "black", "white")
 
@@ -198,9 +200,6 @@ def htp():
             # Start game
             if keys[pygame.K_RETURN]:
                 game()
-            
-            if keys[pygame.K_ESCAPE]:
-                sys.exit()
 
             if mouse_click[0]:
                 if start_button.collidepoint(mouse_pos):
