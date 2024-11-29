@@ -14,9 +14,16 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 screen_width, screen_height = screen.get_size()
 print(screen_width, screen_height)
 
+school_logo = pygame.image.load("school_logo.png")
+school_logo.set_alpha(128)
+image_rect = school_logo.get_rect()
+image_rect.topright = (screen_width, 0)
+
 t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 65)
+
+
 
 debug_mode = False # Not die
 
@@ -60,7 +67,7 @@ def show_info(start_time, score):
 
     score = round(elapsed_time * 25 + score * 250)
     score_text = default_font.render(f"Score: {score}", True, (128, 128, 128, 128))
-    info_screen.blit(score_text, (30, 80))
+    info_screen.blit(score_text, (30, 78))
 
     screen.blit(info_screen, (0, 0))
 
@@ -70,6 +77,7 @@ def main():
     # Start button
     screen.fill("black")
     start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.45, screen_width * 0.2, screen_height * 0.1)
+    screen.blit(school_logo, image_rect)
     pygame.draw.rect(screen, "white", start_button)
     dbwt(screen, start_button, "Start Game", default_font, "black", "white")
 
@@ -110,6 +118,8 @@ def restart(start_time, score):
         return
 
     screen.fill("black")
+    screen.blit(school_logo, image_rect)
+    pygame.display.flip()
     show_info(start_time, score)
 
     # Restart Button
@@ -167,11 +177,14 @@ def restart(start_time, score):
 def htp():
 
     screen.fill("black")
+
     how_to_play_text = pygame.Rect(screen_width * 0.3, screen_height * 0.1, screen_width * 0.4, screen_height * 0.1)
     how_to_play_text_2 = pygame.Rect(screen_width * 0.3, screen_height * 0.2, screen_width * 0.4, screen_height * 0.1)
     dbwt(screen, how_to_play_text, "Use arrow keys or WASD to control.", default_font, "white", "black")
     dbwt(screen, how_to_play_text_2, "Avoid any bullets or x-rays.", default_font, "white", "black")
     start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.45, screen_width * 0.2, screen_height * 0.1)
+    screen.blit(school_logo, image_rect)
+    pygame.display.flip()
     pygame.display.flip()
     pygame.time.delay(3000)
     pygame.draw.rect(screen, "white", start_button)
@@ -212,6 +225,8 @@ def htp():
 def game():
 
     screen.fill("black")
+    screen.blit(school_logo, image_rect)
+    pygame.display.flip()
 
     clock = pygame.time.Clock()
 
@@ -236,17 +251,14 @@ def game():
 
     # Bullets
     line_len = screen_width * 0.06
-    line_spd = screen_width * 0.005
-    initial_line_spd = line_spd
+    line_spd = 10
     bullet_reload = 60
     bullet_amount = 3
     xray_chance = 5
 
     enemy_size = screen_width * 0.025
-    lucky_block_size = screen_width * 0.04
 
-    enemy_spd = screen_width * 0.007
-    initial_enemy_spd = enemy_spd
+    enemy_spd = 10
 
     status = 0
 
@@ -292,6 +304,7 @@ def game():
 
         # Updating Status
         if status > 0:
+            
             if 1 <= status_rand <= 1:
                 player_spd = min(player_spd + 15, initial_player_spd * 1.2)
             elif 2 <= status_rand <= 2:
@@ -301,15 +314,17 @@ def game():
             elif 4 <= status_rand <= 4:
                 player_size = max(player_size - 1, initial_player_size * 0.8)
             elif 5 <= status_rand <= 5:
-                enemy_spd = max(enemy_spd - 0.5, initial_enemy_spd * 0.5)
-                line_spd = max(line_spd - 0.5, initial_line_spd * 0.5)
+                enemy_spd = max(enemy_spd - 0.5, 5)
+                line_spd = max(line_spd - 0.5, 5)
         else:
             player_spd = max(player_spd - 10, initial_player_spd)
             player_spd = min(player_spd + 10, initial_player_spd)
             player_size = max(player_size - 1, initial_player_size)
             player_size = min(player_size + 1, initial_player_size)
-            enemy_spd = min(enemy_spd + 0.5, initial_enemy_spd)
-            line_spd = min(line_spd + 0.5, initial_line_spd)
+            enemy_spd = min(enemy_spd + 0.5, 10)
+            line_spd = min(line_spd + 0.5, 10)
+
+        screen.blit(school_logo, image_rect)
         
         # Player properties
         pygame.draw.circle(screen, "white", player_pos, player_size)
@@ -342,7 +357,7 @@ def game():
         # Drawing Enemies
         for rect_pos, type, dir in rects:
             pygame.draw.rect(screen, "white",
-                             (rect_pos.x - enemy_size // 2, rect_pos.y - enemy_size // 2, enemy_size, enemy_size))
+                             (rect_pos.x - 20, rect_pos.y - 20, enemy_size, enemy_size))
 
         # Create bullet from enemy
         if time >= 180 and time % bullet_reload == 0:
@@ -441,7 +456,7 @@ def game():
         # Create Lucky Block
         if len(lucky_block) == 0 and status == -150:
             posx, posy = randint(30, screen_width - 30), randint(30, screen_height - 30)
-            lucky_square = pygame.Rect(posx - lucky_block_size // 2, posy - lucky_block_size // 2, lucky_block_size, lucky_block_size)
+            lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
             lucky_block.append(lucky_square)
 
 
@@ -463,10 +478,10 @@ def game():
         # Bullets stats changing
 
         if bullet_amount >= 4 and time > 0 and time % 1000 == 500:
-            if bullet_amount < 8:
+            if bullet_amount < 16:
                 bullet_amount += 1
             if bullet_reload > 10:
-                bullet_reload = ceil(bullet_reload * 0.9)
+                bullet_reload = ceil(bullet_reload*0.9)
             if line_spd < 25:
                 line_spd = ceil(line_spd*1.1)
             if xray_chance < 75:
@@ -488,4 +503,3 @@ def game():
 
 
 main()
-
