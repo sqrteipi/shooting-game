@@ -251,14 +251,17 @@ def game():
 
     # Bullets
     line_len = screen_width * 0.06
-    line_spd = 10
+    line_spd = screen_width * 0.008
+    initial_line_spd = line_spd
+
     bullet_reload = 60
     bullet_amount = 3
     xray_chance = 5
 
     enemy_size = screen_width * 0.025
 
-    enemy_spd = 10
+    enemy_spd = screen_width * 0.007
+    initial_enemy_spd = enemy_spd
 
     status = 0
 
@@ -313,15 +316,15 @@ def game():
             elif 4 <= status_rand <= 4:
                 player_size = max(player_size - 1, initial_player_size * 0.8)
             elif 5 <= status_rand <= 5:
-                enemy_spd = max(enemy_spd - 0.5, 5)
-                line_spd = max(line_spd - 0.5, 5)
+                enemy_spd = max(enemy_spd - 0.5, initial_enemy_spd * 0.5)
+                line_spd = max(line_spd - 0.5, initial_line_spd * 0.5)
         else:
             player_spd = max(player_spd - 10, initial_player_spd)
             player_spd = min(player_spd + 10, initial_player_spd)
             player_size = max(player_size - 1, initial_player_size)
             player_size = min(player_size + 1, initial_player_size)
-            enemy_spd = min(enemy_spd + 0.5, 10)
-            line_spd = min(line_spd + 0.5, 10)
+            enemy_spd = min(enemy_spd + 0.5, initial_enemy_spd)
+            line_spd = min(line_spd + 0.5, initial_line_spd)
 
         screen.blit(school_logo, image_rect)
         
