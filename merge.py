@@ -18,7 +18,7 @@ t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 65)
 
-debug_mode = True # Not die
+debug_mode = False # Not die
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -60,7 +60,7 @@ def show_info(start_time, score):
 
     score = round(elapsed_time * 25 + score * 250)
     score_text = default_font.render(f"Score: {score}", True, (128, 128, 128, 128))
-    info_screen.blit(score_text, (30, 78))
+    info_screen.blit(score_text, (30, 80))
 
     screen.blit(info_screen, (0, 0))
 
@@ -292,7 +292,6 @@ def game():
 
         # Updating Status
         if status > 0:
-            status_rand = 5
             if 1 <= status_rand <= 1:
                 player_spd = min(player_spd + 15, initial_player_spd * 1.2)
             elif 2 <= status_rand <= 2:
@@ -464,10 +463,10 @@ def game():
         # Bullets stats changing
 
         if bullet_amount >= 4 and time > 0 and time % 1000 == 500:
-            if bullet_amount < 16:
+            if bullet_amount < 8:
                 bullet_amount += 1
             if bullet_reload > 10:
-                bullet_reload = ceil(bullet_reload*0.9)
+                bullet_reload = ceil(bullet_reload * 0.9)
             if line_spd < 25:
                 line_spd = ceil(line_spd*1.1)
             if xray_chance < 75:
