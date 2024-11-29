@@ -223,8 +223,10 @@ def game():
     # Player
     player_pos = pygame.Vector2(screen.get_width() // 2,
                                 screen.get_height() // 2)
-    player_size = 30
-    player_spd = 320
+    player_size = screen_width * 0.02
+    initial_player_size = player_size
+    player_spd = screen_width * 0.3
+    initial_player_spd = player_spd
 
     # Objects
     rects = []
@@ -233,11 +235,13 @@ def game():
     lucky_block = []
 
     # Bullets
-    line_len = 75
+    line_len = screen_width * 0.06
     line_spd = 10
     bullet_reload = 60
     bullet_amount = 3
     xray_chance = 5
+
+    enemy_size = screen_width * 0.025
 
     enemy_spd = 10
 
@@ -253,7 +257,7 @@ def game():
 
     pygame.draw.circle(screen, "white", player_pos, player_size)
     for rect_pos, type, dir in rects:
-        pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+        pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, enemy_size, enemy_size))
     start_text_block = pygame.Rect(screen_width // 2 - 100, 50, 200, 200)
     dbwt(screen, start_text_block, "3.", default_font, "white", "black")
     pygame.display.flip()
@@ -287,21 +291,21 @@ def game():
         if status > 0:
             
             if 1 <= status_rand <= 1:
-                player_spd = min(player_spd + 15, 500)
+                player_spd = min(player_spd + 15, initial_player_spd * 1.2)
             elif 2 <= status_rand <= 2:
-                player_spd = max(player_spd - 15, 200)
+                player_spd = max(player_spd - 15, initial_player_spd * 0.8)
             elif 3 <= status_rand <= 3:
-                player_size = min(player_size + 1, 45)
+                player_size = min(player_size + 1, initial_player_size * 1.2)
             elif 4 <= status_rand <= 4:
-                player_size = max(player_size - 1, 20)
+                player_size = max(player_size - 1, initial_player_size * 0.8)
             elif 5 <= status_rand <= 5:
                 enemy_spd = max(enemy_spd - 0.5, 5)
                 line_spd = max(line_spd - 0.5, 5)
         else:
-            player_spd = max(player_spd - 10, 300)
-            player_spd = min(player_spd + 10, 300)
-            player_size = max(player_spd - 1, 30)
-            player_size = min(player_spd + 1, 30)
+            player_spd = max(player_spd - 10, initial_player_spd)
+            player_spd = min(player_spd + 10, initial_player_spd)
+            player_size = max(player_size - 1, initial_player_size)
+            player_size = min(player_size + 1, initial_player_size)
             enemy_spd = min(enemy_spd + 0.5, 10)
             line_spd = min(line_spd + 0.5, 10)
         
@@ -336,7 +340,7 @@ def game():
         # Drawing Enemies
         for rect_pos, type, dir in rects:
             pygame.draw.rect(screen, "white",
-                             (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+                             (rect_pos.x - 20, rect_pos.y - 20, enemy_size, enemy_size))
 
         # Create bullet from enemy
         if time >= 180 and time % bullet_reload == 0:
