@@ -5,12 +5,15 @@ from random import randint, uniform
 import sys
 
 # pygame setup
-screen_width = 1280
-screen_height = 720
+
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption("shooting game (testing)")
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+screen_width, screen_height = screen.get_size()
+print(screen_width, screen_height)
+
 t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 65)
@@ -66,8 +69,7 @@ def main():
 
     # Start button
     screen.fill("black")
-    start_button = pygame.Rect(screen_width // 2 - 200,
-                               screen_height // 2 - 50, 400, 100)
+    start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.45, screen_width * 0.2, screen_height * 0.1)
     pygame.draw.rect(screen, "white", start_button)
     dbwt(screen, start_button, "Start Game", default_font, "black", "white")
 
@@ -111,11 +113,8 @@ def restart(start_time, score):
     show_info(start_time, score)
 
     # Restart Button
-    restart_button = pygame.Rect(screen_width // 2 - 200,
-                                screen_height // 2 - 150, 400,
-                                100)
-    back_button = pygame.Rect(screen_width // 2 - 200,
-                            screen_height // 2 + 50, 400, 100)
+    restart_button = pygame.Rect(screen_width * 0.4, screen_height * 0.35, screen_width * 0.2, screen_height * 0.1)
+    back_button = pygame.Rect(screen_width * 0.4, screen_height * 0.55, screen_width * 0.2, screen_height * 0.1)
 
     dbwt(screen, restart_button, "Restart", default_font, "black",
         "white")
@@ -168,12 +167,11 @@ def restart(start_time, score):
 def htp():
 
     screen.fill("black")
-    how_to_play_text = pygame.Rect(screen_width // 2 - 250, 100, 500, 100)
-    how_to_play_text_2 = pygame.Rect(screen_width // 2 - 250, 200, 500, 100)
+    how_to_play_text = pygame.Rect(screen_width * 0.3, screen_height * 0.1, screen_width * 0.4, screen_height * 0.1)
+    how_to_play_text_2 = pygame.Rect(screen_width * 0.3, screen_height * 0.2, screen_width * 0.4, screen_height * 0.1)
     dbwt(screen, how_to_play_text, "Use arrow keys or WASD to control.", default_font, "white", "black")
     dbwt(screen, how_to_play_text_2, "Avoid any bullets or x-rays.", default_font, "white", "black")
-    start_button = pygame.Rect(screen_width // 2 - 200,
-                            screen_height // 2 - 50, 400, 100)
+    start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.45, screen_width * 0.2, screen_height * 0.1)
     pygame.display.flip()
     pygame.time.delay(3000)
     pygame.draw.rect(screen, "white", start_button)
@@ -188,6 +186,9 @@ def htp():
             keys = pygame.key.get_pressed()
             mouse_pos = pygame.mouse.get_pos()
             mouse_click = pygame.mouse.get_pressed()
+
+            if keys[pygame.K_ESCAPE]:
+                sys.exit()
 
             # Button colour change when hover
             if start_button.collidepoint(mouse_pos):
@@ -210,19 +211,20 @@ def htp():
 # Inside the game
 def game():
 
+    screen.fill("black")
+
     clock = pygame.time.Clock()
 
     # Time
     dt = 0
     time = 0
     score = 0
-    start_time = pygame.time.get_ticks()
 
     # Player
     player_pos = pygame.Vector2(screen.get_width() // 2,
                                 screen.get_height() // 2)
     player_size = 30
-    player_spd = 300
+    player_spd = 320
 
     # Objects
     rects = []
@@ -233,9 +235,9 @@ def game():
     # Bullets
     line_len = 75
     line_spd = 10
-    bullet_reload = 45
-    bullet_amount = 4
-    xray_chance = 10
+    bullet_reload = 60
+    bullet_amount = 3
+    xray_chance = 5
 
     enemy_spd = 10
 
@@ -247,6 +249,24 @@ def game():
         uniform(0, 360)
     ])
 
+    # Countdown
+
+    pygame.draw.circle(screen, "white", player_pos, player_size)
+    for rect_pos, type, dir in rects:
+        pygame.draw.rect(screen, "white", (rect_pos.x - 20, rect_pos.y - 20, 40, 40))
+    start_text_block = pygame.Rect(screen_width // 2 - 100, 50, 200, 200)
+    dbwt(screen, start_text_block, "3.", default_font, "white", "black")
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    dbwt(screen, start_text_block, "2..", default_font, "white", "black")
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    dbwt(screen, start_text_block, "1...", default_font, "white", "black")
+    pygame.display.flip()
+    pygame.time.delay(1000) 
+
+    start_time = pygame.time.get_ticks()
+    
     running = True
 
     while running:
@@ -291,24 +311,26 @@ def game():
         # Player Movements
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if player_pos.y > player_spd * dt + player_size:
-                player_pos.y -= player_spd * dt
+        if time > 5:
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
+                if player_pos.y > player_spd * dt + player_size:
+                    player_pos.y -= player_spd * dt
 
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if player_pos.x > player_spd * dt + player_size:
-                player_pos.x -= player_spd * dt
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                if player_pos.x > player_spd * dt + player_size:
+                    player_pos.x -= player_spd * dt
 
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if player_pos.y < screen_height - player_spd * dt - player_size:
-                player_pos.y += player_spd * dt
+            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                if player_pos.y < screen_height - player_spd * dt - player_size:
+                    player_pos.y += player_spd * dt
 
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if player_pos.x < screen_width - player_spd * dt - player_size:
-                player_pos.x += player_spd * dt
+            if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                if player_pos.x < screen_width - player_spd * dt - player_size:
+                    player_pos.x += player_spd * dt
 
         # In-game options menu
-        # if keys[pygame.K_ESCAPE]:
+        if keys[pygame.K_ESCAPE]:
+            sys.exit()
         # UI design work, delay it first
 
         # Drawing Enemies
@@ -433,7 +455,8 @@ def game():
         status -= 1
 
         # Bullets stats changing
-        if time > 0 and time % 1000 == 0:
+
+        if bullet_amount >= 4 and time > 0 and time % 1000 == 500:
             if bullet_amount < 16:
                 bullet_amount += 1
             if bullet_reload > 10:
@@ -442,6 +465,10 @@ def game():
                 line_spd = ceil(line_spd*1.1)
             if xray_chance < 75:
                 xray_chance *= 1.1
+        
+        if bullet_amount < 4 and time > 0 and time % 500 == 0:
+            bullet_amount += 1
+        
 
 
         # flip() the display to put your work on screen
@@ -455,4 +482,4 @@ def game():
 
 
 main()
-pygame.quit()
+
