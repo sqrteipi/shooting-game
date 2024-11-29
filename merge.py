@@ -304,7 +304,6 @@ def game():
 
         # Updating Status
         if status > 0:
-            
             if 1 <= status_rand <= 1:
                 player_spd = min(player_spd + 15, initial_player_spd * 1.2)
             elif 2 <= status_rand <= 2:
@@ -481,7 +480,7 @@ def game():
             if bullet_amount < 16:
                 bullet_amount += 1
             if bullet_reload > 10:
-                bullet_reload = ceil(bullet_reload*0.9)
+                bullet_reload = ceil(bullet_reload * 0.9)
             if line_spd < 25:
                 line_spd = ceil(line_spd*1.1)
             if xray_chance < 75:
@@ -490,6 +489,11 @@ def game():
         if bullet_amount < 4 and time > 0 and time % 500 == 0:
             bullet_amount += 1
         
+        if time >= 2000 and time % 1000 == 0:
+            rects.append([
+                pygame.Vector2(randint(0, screen_width), randint(0, screen_height)), 0,
+                uniform(0, 360)
+            ])
 
 
         # flip() the display to put your work on screen
