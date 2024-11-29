@@ -18,7 +18,7 @@ t_screen = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
 
 default_font = pygame.font.Font(None, 65)
 
-debug_mode = False # Not die
+debug_mode = True # Not die
 
 # Check if a line intersects with a circle
 def itlc(x0, y0, r, x1, y1, x2, y2):
@@ -236,14 +236,17 @@ def game():
 
     # Bullets
     line_len = screen_width * 0.06
-    line_spd = 10
+    line_spd = screen_width * 0.005
+    initial_line_spd = line_spd
     bullet_reload = 60
     bullet_amount = 3
     xray_chance = 5
 
     enemy_size = screen_width * 0.025
+    lucky_block_size = screen_width * 0.04
 
-    enemy_spd = 10
+    enemy_spd = screen_width * 0.007
+    initial_enemy_spd = enemy_spd
 
     status = 0
 
@@ -289,7 +292,7 @@ def game():
 
         # Updating Status
         if status > 0:
-            
+            status_rand = 5
             if 1 <= status_rand <= 1:
                 player_spd = min(player_spd + 15, initial_player_spd * 1.2)
             elif 2 <= status_rand <= 2:
@@ -299,15 +302,15 @@ def game():
             elif 4 <= status_rand <= 4:
                 player_size = max(player_size - 1, initial_player_size * 0.8)
             elif 5 <= status_rand <= 5:
-                enemy_spd = max(enemy_spd - 0.5, 5)
-                line_spd = max(line_spd - 0.5, 5)
+                enemy_spd = max(enemy_spd - 0.5, initial_enemy_spd * 0.5)
+                line_spd = max(line_spd - 0.5, initial_line_spd * 0.5)
         else:
             player_spd = max(player_spd - 10, initial_player_spd)
             player_spd = min(player_spd + 10, initial_player_spd)
             player_size = max(player_size - 1, initial_player_size)
             player_size = min(player_size + 1, initial_player_size)
-            enemy_spd = min(enemy_spd + 0.5, 10)
-            line_spd = min(line_spd + 0.5, 10)
+            enemy_spd = min(enemy_spd + 0.5, initial_enemy_spd)
+            line_spd = min(line_spd + 0.5, initial_line_spd)
         
         # Player properties
         pygame.draw.circle(screen, "white", player_pos, player_size)
@@ -340,7 +343,7 @@ def game():
         # Drawing Enemies
         for rect_pos, type, dir in rects:
             pygame.draw.rect(screen, "white",
-                             (rect_pos.x - 20, rect_pos.y - 20, enemy_size, enemy_size))
+                             (rect_pos.x - enemy_size // 2, rect_pos.y - enemy_size // 2, enemy_size, enemy_size))
 
         # Create bullet from enemy
         if time >= 180 and time % bullet_reload == 0:
@@ -439,7 +442,7 @@ def game():
         # Create Lucky Block
         if len(lucky_block) == 0 and status == -150:
             posx, posy = randint(30, screen_width - 30), randint(30, screen_height - 30)
-            lucky_square = pygame.Rect(posx - 30, posy - 30, 60, 60)
+            lucky_square = pygame.Rect(posx - lucky_block_size // 2, posy - lucky_block_size // 2, lucky_block_size, lucky_block_size)
             lucky_block.append(lucky_square)
 
 
