@@ -178,11 +178,11 @@ def htp():
 
     screen.fill("black")
 
-    how_to_play_text = pygame.Rect(screen_width * 0.3, screen_height * 0.1, screen_width * 0.4, screen_height * 0.1)
-    how_to_play_text_2 = pygame.Rect(screen_width * 0.3, screen_height * 0.2, screen_width * 0.4, screen_height * 0.1)
+    how_to_play_text = pygame.Rect(screen_width * 0.3, screen_height * 0.2, screen_width * 0.4, screen_height * 0.1)
+    how_to_play_text_2 = pygame.Rect(screen_width * 0.3, screen_height * 0.3, screen_width * 0.4, screen_height * 0.1)
     dbwt(screen, how_to_play_text, "Use arrow keys or WASD to control.", default_font, "white", "black")
     dbwt(screen, how_to_play_text_2, "Avoid any bullets or x-rays.", default_font, "white", "black")
-    start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.45, screen_width * 0.2, screen_height * 0.1)
+    start_button = pygame.Rect(screen_width * 0.4, screen_height * 0.5, screen_width * 0.2, screen_height * 0.1)
     screen.blit(school_logo, image_rect)
     pygame.display.flip()
     pygame.display.flip()
