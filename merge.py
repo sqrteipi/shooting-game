@@ -306,9 +306,9 @@ def game():
 
         # Updating Status
         if status > 0:
-            if 1 <= status_rand <= 10:
+            if 1 <= status_rand <= 25:
                 player_spd = min(player_spd + 15, initial_player_spd * 1.5)
-            elif 11 <= status_rand <= 35:
+            elif 26 <= status_rand <= 35:
                 player_spd = max(player_spd - 15, initial_player_spd * 0.5)
             elif 36 <= status_rand <= 45:
                 player_size = min(player_size + 1, initial_player_size * 1.5)
@@ -470,7 +470,7 @@ def game():
             else :
                 # Touched Lucky Block
                 status = 150
-                status_rand = randint(1, 100)
+                status_rand = uniform(1, 100)
                 # print(status_rand)
                 score += 1
 
