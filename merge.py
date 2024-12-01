@@ -12,7 +12,6 @@ pygame.display.set_caption("shooting game (testing)")
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 screen_width, screen_height = screen.get_size()
-print(screen_width, screen_height)
 
 school_logo = pygame.image.load("school_logo.png")
 school_logo.set_alpha(128)
@@ -307,22 +306,22 @@ def game():
 
         # Updating Status
         if status > 0:
-            if 1 <= status_rand <= 1:
-                player_spd = min(player_spd + 15, initial_player_spd * 1.2)
-            elif 2 <= status_rand <= 2:
-                player_spd = max(player_spd - 15, initial_player_spd * 0.8)
-            elif 3 <= status_rand <= 3:
-                player_size = min(player_size + 1, initial_player_size * 1.2)
-            elif 4 <= status_rand <= 4:
-                player_size = max(player_size - 1, initial_player_size * 0.8)
-            elif 5 <= status_rand <= 5:
+            if 1 <= status_rand <= 10:
+                player_spd = min(player_spd + 15, initial_player_spd * 1.5)
+            elif 11 <= status_rand <= 35:
+                player_spd = max(player_spd - 15, initial_player_spd * 0.5)
+            elif 36 <= status_rand <= 45:
+                player_size = min(player_size + 1, initial_player_size * 1.5)
+            elif 46 <= status_rand <= 70:
+                player_size = max(player_size - 1, initial_player_size * 0.5)
+            elif 71 <= status_rand <= 100:
                 enemy_spd = max(enemy_spd - 0.5, initial_enemy_spd * 0.5)
                 line_spd = max(line_spd - 0.5, initial_line_spd * 0.5)
         else:
-            player_spd = max(player_spd - 10, initial_player_spd)
-            player_spd = min(player_spd + 10, initial_player_spd)
-            player_size = max(player_size - 1, initial_player_size)
-            player_size = min(player_size + 1, initial_player_size)
+            player_spd = max(player_spd - 5, initial_player_spd)
+            player_spd = min(player_spd + 5, initial_player_spd)
+            player_size = max(player_size - 0.05, initial_player_size)
+            player_size = min(player_size + 0.05, initial_player_size)
             enemy_spd = min(enemy_spd + 0.5, initial_enemy_spd)
             line_spd = min(line_spd + 0.5, initial_line_spd)
 
@@ -471,7 +470,8 @@ def game():
             else :
                 # Touched Lucky Block
                 status = 150
-                status_rand = randint(1, 5)
+                status_rand = randint(1, 100)
+                # print(status_rand)
                 score += 1
 
         lucky_block = lucky_block2
